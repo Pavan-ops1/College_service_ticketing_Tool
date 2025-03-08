@@ -1,0 +1,135 @@
+.dashboard-container {
+    font-family: Arial, sans-serif;
+    padding: 20px;
+    background-color: #f7f7f7;
+    border-radius: 10px;
+    max-width: 1000px;
+    margin: 20px auto;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dashboard-title {
+    font-size: 2rem;
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .error-message {
+    color: red;
+    text-align: center;
+    margin-bottom: 15px;
+  }
+  
+  .no-tickets {
+    text-align: center;
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  .ticket-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 0;
+  }
+  
+  .ticket-card {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .ticket-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .ticket-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .ticket-status {
+    padding: 5px 10px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .ticket-status.open {
+    background-color: #f0ad4e;
+    color: white;
+  }
+  
+  .ticket-status.in-progress {
+    background-color: #5bc0de;
+    color: white;
+  }
+  
+  .ticket-status.completed {
+    background-color: #5cb85c;
+    color: white;
+  }
+  
+  .ticket-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .status-dropdown {
+    padding: 5px 10px;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ddd;
+  }
+  
+  .view-button {
+    background-color: #337ab7;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  
+  .view-button:hover {
+    background-color: #285e8e;
+  }
+  
+  .ticket-details-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .ticket-details-modal img {
+    max-width: 100%;
+    height: auto;
+    border-radius: 8px;
+  }
+  
+  .close-button {
+    background-color: #d9534f;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    margin-top: 10px;
+  }
+  
+  .close-button:hover {
+    background-color: #c9302c;
+  }
+  

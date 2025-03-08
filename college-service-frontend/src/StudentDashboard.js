@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import "./StudentDashboard.css";
 
 const StudentDashboard = () => {
   const studentId = 1; // Change this to dynamic user ID if needed
@@ -17,7 +18,10 @@ const StudentDashboard = () => {
     axios
       .get("http://127.0.0.1:5000/services")
       .then((response) => setServices(response.data))
-      .catch((error) => console.error("Error fetching services:", error));
+      .catch((error) => {
+        console.error("Error fetching services:", error);
+        setError("❌ Failed to fetch services. Try again later.");
+      });
   }, []);
 
   // ✅ Fetch student tickets
@@ -30,6 +34,7 @@ const StudentDashboard = () => {
           setTickets([]); // No tickets found, set empty array
         } else {
           console.error("Error fetching tickets:", error);
+          setError("❌ Failed to fetch tickets. Try again later.");
         }
       });
   };
@@ -69,11 +74,12 @@ const StudentDashboard = () => {
         alert("✅ Ticket Created Successfully!");
         setIssueDescription("");
         setImage(null);
+        setServiceId("");
         fetchTickets();
       }
     } catch (error) {
       console.error("API Error:", error.response ? error.response.data : error);
-      setError("❌ Error creating ticket. Check logs.");
+      setError("❌ Error creating ticket. Please check the logs.");
     }
   };
 
@@ -96,7 +102,7 @@ const StudentDashboard = () => {
     <div className="dashboard-container">
       <h2>🎓 Student Dashboard</h2>
 
-      {/* Toggle between Create Ticket and My Tickets */}
+      {/* ✅ Toggle Button */}
       <div className="view-toggle">
         <button onClick={toggleView}>
           {showCreateTicket ? "View My Tickets" : "Create Ticket"}
@@ -115,23 +121,30 @@ const StudentDashboard = () => {
               required
             >
               <option value="">Select Service</option>
-              {services.map((service) => (
-                <option key={service.service_id} value={service.service_id}>
-                  {service.service_name}
-                </option>
-              ))}
+              {services.length === 0 ? (
+                <option disabled>No Services Available</option>
+              ) : (
+                services.map((service) => (
+                  <option key={service.service_id} value={service.service_id}>
+                    {service.service_name}
+                  </option>
+                ))
+              )}
             </select>
+
             <textarea
               placeholder="Describe your issue..."
               value={issueDescription}
               onChange={(e) => setIssueDescription(e.target.value)}
               required
             />
+            
             <input
               type="file"
               onChange={(e) => setImage(e.target.files[0])}
               accept="image/*"
             />
+            
             <button type="submit">Submit Ticket</button>
           </form>
         </div>
@@ -150,14 +163,25 @@ const StudentDashboard = () => {
                   <strong>Service:</strong>{" "}
                   {services.find((s) => s.service_id === ticket.service_id)
                     ?.service_name || "Unknown"}{" "}
-                  | <strong> Issue:</strong> {ticket.description} |{" "}
-                  <strong> Status:</strong> {ticket.status} |{" "}
-                  <strong> Created:</strong> {ticket.created_at}
+                  | <strong>Issue:</strong> {ticket.description} |{" "}
+                  <strong>Status:</strong>{" "}
+                  <span
+                    style={{
+                      color:
+                        ticket.status === "Pending"
+                          ? "orange"
+                          : ticket.status === "Resolved"
+                          ? "green"
+                          : "red",
+                    }}
+                  >
+                    {ticket.status}
+                  </span>
                   <button onClick={() => handleViewDetails(ticket)}>
                     View Details
                   </button>
 
-                  {/* Render Image Preview (If Image Exists) */}
+                  {/* ✅ Render Image (if available) */}
                   {ticket.image_url && (
                     <div>
                       <img
@@ -167,6 +191,7 @@ const StudentDashboard = () => {
                           maxWidth: "100px",
                           maxHeight: "100px",
                           objectFit: "cover",
+                          borderRadius: "5px",
                         }}
                       />
                     </div>
@@ -178,10 +203,10 @@ const StudentDashboard = () => {
         </div>
       )}
 
-      {/* ✅ View Ticket Details Modal */}
+      {/* ✅ Ticket Details Modal */}
       {selectedTicket && (
         <div className="ticket-details-modal">
-          <h3>Ticket Details</h3>
+          <h3>🎟️ Ticket Details</h3>
           <p>
             <strong>Service:</strong>{" "}
             {services.find((s) => s.service_id === selectedTicket.service_id)
@@ -196,6 +221,7 @@ const StudentDashboard = () => {
           <p>
             <strong>Created At:</strong> {selectedTicket.created_at}
           </p>
+
           {selectedTicket.image_url && (
             <div>
               <strong>Image:</strong>

@@ -11,6 +11,7 @@ from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 from prometheus_client import start_http_server, Counter, Gauge, generate_latest
 from prometheus_client import Counter
+from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
 
 
 
@@ -19,6 +20,7 @@ app = Flask(__name__)
 # Define the allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = './uploads'  # Directory where images will be saved
+
 metrics = PrometheusMetrics(app)
 
 ticket_creation_counter = Counter('ticket_creation_count', 'Total number of tickets raised')
@@ -50,9 +52,9 @@ def home():
 def health_check():
     return jsonify(status="OK"), 200
 
-
-
-
+@app.route('/metrics')
+def metrics():
+    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
 
 @app.route("/example")
 def example():
@@ -73,43 +75,32 @@ def get_services():
     conn.close()
     return jsonify(services)
 
-
 @app.route('/register', methods=['POST'])
 def register():
     data = request.json
     name = data.get('name')
     email = data.get('email')
     password = data.get('password')
-    role = data.get('role', 'student')  # Default role = student
-    service_id = data.get('service_id')  # Optional, required for service_staff
+    role = data.get('role', 'student')  # Default role is student
+    service_id = data.get('service_id')
 
     if not name or not email or not password:
         return jsonify({"error": "Name, Email, and Password are required"}), 400
 
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    # ✅ 🚀 🚨 THE FINAL BULLETPROOF LOCK 🚨
+    if role == 'admin':
+        return jsonify({"error": "You CANNOT register as admin!"}), 403
 
     # ✅ Check if email already exists
+    conn = get_db_connection()
+    cursor = conn.cursor()
     cursor.execute("SELECT * FROM users WHERE email = ?", (email,))
     existing_user = cursor.fetchone()
     if existing_user:
         conn.close()
-        return jsonify({"error": "Email already registered"}), 409
+        return jsonify({"error": "Email already registered!"}), 409
 
-    # ✅ If role is 'service_staff', service_id is required
-    if role == "service_staff":
-        if not service_id:
-            conn.close()
-            return jsonify({"error": "Service selection is required for service staff"}), 400
-        
-        # Check if service_id exists
-        cursor.execute("SELECT service_name FROM services WHERE service_id = ?", (service_id,))
-        service = cursor.fetchone()
-        if not service:
-            conn.close()
-            return jsonify({"error": "Invalid service_id provided"}), 400  
-
-    # ✅ Correct Flask-Bcrypt hashing
+    # ✅ Encrypt the password
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     # ✅ Insert user
@@ -121,7 +112,6 @@ def register():
     conn.close()
 
     return jsonify({"message": "User registered successfully!"}), 201
-
 
 @app.route('/login', methods=['POST'])
 def login():
@@ -464,4 +454,4 @@ def get_tickets():
     return {"message": "CORS is working!"}
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(host='127.0.0.1', port=5000)

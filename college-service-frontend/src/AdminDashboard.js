@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "axios"; 
+import './AdminDashboard.css';
+
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -48,15 +50,15 @@ const AdminDashboard = () => {
     try {
       const response = await axios.put(`http://127.0.0.1:5000/admin/update-ticket/${ticketId}`, {
         status: statusUpdate,
-        service_type: selectedTicket.service_name, // Send current service type
-        description: selectedTicket.description,   // Send current description
+        service_type: selectedTicket.service_name,
+        description: selectedTicket.description,
       });
 
       if (response.status === 200) {
         alert("✅ Ticket status updated successfully!");
         fetchTickets();
         setSelectedTicket(null);
-        setStatusUpdate("");  // Reset dropdown after update
+        setStatusUpdate("");
       }
     } catch (err) {
       console.error("Error updating ticket:", err);
@@ -115,73 +117,114 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <h2>🛠️ Admin Dashboard</h2>
+    <div className="admin-dashboard">
+      <h2 className="title">🛠️ Admin Dashboard</h2>
 
       {/* Filters & Search */}
-      <div className="filters-container">
-        <input type="text" placeholder="🔍 Search tickets..." value={searchQuery} onChange={handleSearch} />
-        <select onChange={handleServiceFilter} value={serviceFilter}>
+      <div className="filters">
+        <input
+          type="text"
+          className="search-input"
+          placeholder="🔍 Search tickets..."
+          value={searchQuery}
+          onChange={handleSearch}
+        />
+        <select className="service-filter" onChange={handleServiceFilter} value={serviceFilter}>
           <option value="">All Services</option>
           <option value="Cleaning">Cleaning</option>
           <option value="Gardening">Gardening</option>
           <option value="IT Support">IT Support</option>
         </select>
-        <input type="date" name="start" onChange={handleDateFilter} value={dateRange.start} />
-        <input type="date" name="end" onChange={handleDateFilter} value={dateRange.end} />
+        <input
+          type="date"
+          className="date-filter"
+          name="start"
+          onChange={handleDateFilter}
+          value={dateRange.start}
+        />
+        <input
+          type="date"
+          className="date-filter"
+          name="end"
+          onChange={handleDateFilter}
+          value={dateRange.end}
+        />
       </div>
 
-      {/* Show Errors */}
-      {error && <p className="error">{error}</p>}
+      {/* Error Message */}
+      {error && <p className="error-message">{error}</p>}
 
-      {/* Loading State */}
+      {/* Loading Indicator */}
       {loading ? (
-        <p>⏳ Loading tickets...</p>
+        <p className="loading">⏳ Loading tickets...</p>
       ) : (
-        <div className="tickets-list">
-          <h3>📋 All Tickets</h3>
+        <div className="ticket-grid">
           {filteredTickets.length === 0 ? (
             <p>No tickets found.</p>
           ) : (
-            <ul>
-              {filteredTickets.map((ticket) => (
-                <li key={ticket.ticket_id}>
-                  <img src={serviceImages[ticket.service_name]} alt={ticket.service_name} width="50" height="50" />
-                  <strong> Service:</strong> {ticket.service_name} | 
-                  <strong> Issue:</strong> {ticket.description} | 
-                  <strong> Status:</strong> {ticket.status} | 
-                  <strong> Created:</strong> {ticket.created_at}
-                  <button onClick={() => handleViewDetails(ticket)}>View Details</button>
-                </li>
-              ))}
-            </ul>
+            filteredTickets.map((ticket) => (
+              <div key={ticket.ticket_id} className="ticket-card">
+                <img
+                  className="service-icon"
+                  src={serviceImages[ticket.service_name]}
+                  alt={ticket.service_name}
+                  width="60"
+                  height="60"
+                />
+                <div>
+                  <strong>Service:</strong> {ticket.service_name}
+                  <br />
+                  <strong>Status:</strong> {ticket.status}
+                  <br />
+                  <strong>Created:</strong> {ticket.created_at}
+                </div>
+                <button
+                  className="view-details-btn"
+                  onClick={() => handleViewDetails(ticket)}
+                >
+                  View Details
+                </button>
+              </div>
+            ))
           )}
         </div>
       )}
 
-      {/* ✅ Ticket Details Modal */}
+      {/* Ticket Details Modal */}
       {selectedTicket && (
         <div className="ticket-details-modal">
           <h3>Ticket Details</h3>
-          <img src={serviceImages[selectedTicket.service_name]} alt={selectedTicket.service_name} width="100" height="100" />
-          <p><strong>Service:</strong> {selectedTicket.service_name}</p>
-          <p><strong>Issue Description:</strong> {selectedTicket.description}</p>
-          <p><strong>Status:</strong> {selectedTicket.status}</p>
-          <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
+          <div className="ticket-details">
+            <img
+              src={serviceImages[selectedTicket.service_name]}
+              alt={selectedTicket.service_name}
+              width="100"
+              height="100"
+            />
+            <p><strong>Service:</strong> {selectedTicket.service_name}</p>
+            <p><strong>Issue:</strong> {selectedTicket.description}</p>
+            <p><strong>Status:</strong> {selectedTicket.status}</p>
 
-          {/* Update Status */}
-          <div>
-            <select value={statusUpdate} onChange={(e) => setStatusUpdate(e.target.value)}>
+            <select
+              value={statusUpdate}
+              onChange={(e) => setStatusUpdate(e.target.value)}
+            >
               <option value="">Update Status</option>
               <option value="Open">Open</option>
               <option value="In Progress">In Progress</option>
               <option value="Completed">Completed</option>
             </select>
-            <button onClick={() => handleStatusUpdate(selectedTicket.ticket_id)}>Update</button>
-          </div>
+            <button
+              className="update-btn"
+              onClick={() => handleStatusUpdate(selectedTicket.ticket_id)}
+            >
+              Update Status
+            </button>
 
-          {error && <p className="error">{error}</p>}
-          <button onClick={handleCloseDetails}>Close</button>
+            <button className="close-modal-btn" onClick={handleCloseDetails}>
+              Close
+            </button>
+          </div>
         </div>
       )}
     </div>

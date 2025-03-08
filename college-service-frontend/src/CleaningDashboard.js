@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import './CleaningDashboard.css'; // External CSS for styling
 
 const CleaningDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -45,31 +46,44 @@ const CleaningDashboard = () => {
   };
 
   return (
-    <div>
-      <h2>🧹 Cleaning Service Tickets</h2>
+    <div className="dashboard-container">
+      <h2 className="dashboard-title">🧹 Cleaning Service Tickets</h2>
       {error && <p className="error-message">{error}</p>}
 
       {tickets.length === 0 ? (
-        <p>No tickets available.</p>
+        <p className="no-tickets">No tickets available.</p>
       ) : (
-        <ul>
+        <div className="ticket-grid">
           {tickets.map((ticket) => (
-            <li key={ticket.ticket_id}>
-              <strong>{ticket.description}</strong> - {ticket.status}
-              
-              <select
-                value={ticket.status}
-                onChange={(e) => updateStatus(ticket.ticket_id, e.target.value)}
-              >
-                <option value="Open">Open</option>
-                <option value="In Progress">In Progress</option>
-                <option value="Completed">Completed</option>
-              </select>
+            <div className="ticket-card" key={ticket.ticket_id}>
+              <div className="ticket-header">
+                <strong>{ticket.description}</strong>
+                <span className={`ticket-status ${ticket.status.toLowerCase().replace(" ", "-")}`}>
+                  {ticket.status}
+                </span>
+              </div>
 
-              <button onClick={() => setSelectedTicket(ticket)}>View Details</button>
-            </li>
+              <div className="ticket-actions">
+                <select
+                  value={ticket.status}
+                  onChange={(e) => updateStatus(ticket.ticket_id, e.target.value)}
+                  className="status-dropdown"
+                >
+                  <option value="Open">Open</option>
+                  <option value="In Progress">In Progress</option>
+                  <option value="Completed">Completed</option>
+                </select>
+
+                <button 
+                  className="view-button"
+                  onClick={() => setSelectedTicket(ticket)}
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {selectedTicket && (
@@ -80,7 +94,7 @@ const CleaningDashboard = () => {
           <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
 
           {selectedTicket.image_path ? (
-            <div>
+            <div className="ticket-image">
               <strong>Image:</strong>
               <img
                 src={selectedTicket.image_path.startsWith("http") 
@@ -89,14 +103,13 @@ const CleaningDashboard = () => {
                 }
                 alt="Ticket Image"
                 onError={(e) => { e.target.src = "/fallback-image.jpg"; }} // Fallback if image fails to load
-                style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain" }}
               />
             </div>
           ) : (
             <p>No image available.</p>
           )}
 
-          <button onClick={() => setSelectedTicket(null)}>Close</button>
+          <button className="close-button" onClick={() => setSelectedTicket(null)}>Close</button>
         </div>
       )}
     </div>

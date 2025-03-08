@@ -8,6 +8,7 @@ import CleaningDashboard from "./CleaningDashboard";
 import GardeningDashboard from "./GardeningDashboard";
 import ITSupportDashboard from "./ITSupportDashboard";
 import AdminDashboard from "./AdminDashboard";
+import AnalyticsDashboard from './AnalyticsDashboard';
 
 function App() {
   const [message, setMessage] = useState("");
@@ -29,11 +30,10 @@ function App() {
 
   return (
     <Router>
-      <nav>
-        <Link to="/">Home</Link> | 
-        <Link to="/register">Register</Link> | 
-        <Link to="/login">Login</Link> | 
-        
+      <nav style={navStyle}>
+        <Link to="/" style={linkStyle}>Home</Link> | 
+        <Link to="/register" style={linkStyle}>Register</Link> | 
+        <Link to="/login" style={linkStyle}>Login</Link>
       </nav>
 
       <Routes>
@@ -43,6 +43,7 @@ function App() {
         <Route path="/student-dashboard" element={<StudentDashboard />} /> 
         <Route path="/student-dashboard/create-ticket" element={<CreateTicket />} />
         <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        <Route path="/analytics" element={<AnalyticsDashboard />} />
         <Route path="/cleaning-dashboard" element={<CleaningDashboard />} />
         <Route path="/gardening-dashboard" element={<GardeningDashboard />} />
         <Route path="/it-support-dashboard" element={<ITSupportDashboard />} />
@@ -51,12 +52,51 @@ function App() {
   );
 }
 
-// ✅ Ensure `Home` is defined before exporting `App`
+// ✅ Home Component with Image as Full Background
 const Home = ({ message }) => (
-  <div>
-    <h1>College Service Ticketing Tool 🎟️</h1>
-    <p>{message}</p>
+  <div style={homeStyle}>
+    <div style={overlayStyle}>
+      <h1>🎓 College Service Ticketing Tool 🎟️</h1>
+      <p>{message}</p>
+      <p style={{ marginTop: "10px" }}>We are here to solve your problems!</p>
+    </div>
   </div>
 );
+
+// ✅ Simple CSS for styling
+const navStyle = {
+  backgroundColor: "#282c34",
+  padding: "15px",
+  textAlign: "center"
+};
+
+const linkStyle = {
+  color: "#61dafb",
+  textDecoration: "none",
+  margin: "0 15px",
+  fontWeight: "bold"
+};
+
+// Styling for the Home page with full-screen background image
+const homeStyle = {
+  position: "relative",
+  textAlign: "center",
+  height: "100vh", // Full viewport height
+  backgroundImage: 'url("/college pic.jpg")', // The background image
+  backgroundSize: "cover", // Make sure the image covers the entire screen
+  backgroundPosition: "center", // Center the image
+  backgroundRepeat: "no-repeat", // Prevent the image from repeating
+  color: "white", // Text color for contrast
+};
+
+const overlayStyle = {
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)", // Center the text
+  padding: "20px",
+  backgroundColor: "rgba(0, 0, 0, 0.5)", // Semi-transparent background for the text
+  borderRadius: "10px",
+};
 
 export default App;

@@ -1,0 +1,118 @@
+/* -------------------- Glassmorphism Background -------------------- */
+.login-container {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #6c5ce7, #0984e3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  /* -------------------- Glass Card -------------------- */
+  .login-card {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    animation: fadeIn 1.2s ease-in-out;
+  }
+  
+  /* -------------------- Heading -------------------- */
+  .login-card h2 {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+  }
+  
+  /* -------------------- Input Fields -------------------- */
+  .login-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 15px;
+    border: none;
+    border-radius: 10px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #fff;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s;
+  }
+  
+  .login-card input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+  
+  .login-card input:focus {
+    background-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+    transform: scale(1.03);
+  }
+  
+  /* -------------------- Button -------------------- */
+  .login-card button {
+    background-color: #0984e3;
+    color: #fff;
+    border: none;
+    padding: 12px 0;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-top: 15px;
+  }
+  
+  .login-card button:hover {
+    background-color: #6c5ce7;
+    transform: scale(1.05);
+    box-shadow: 0 10px 25px rgba(108, 92, 231, 0.4);
+  }
+  
+  /* -------------------- Error Message -------------------- */
+  .login-error {
+    color: #ff6b6b;
+    font-size: 0.9rem;
+    background-color: rgba(255, 107, 107, 0.1);
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
+  }
+  
+  /* -------------------- Link -------------------- */
+  .login-card a {
+    color: #81ecec;
+    text-decoration: none;
+    transition: all 0.3s;
+    font-size: 0.9rem;
+  }
+  
+  .login-card a:hover {
+    color: #00cec9;
+    text-decoration: underline;
+  }
+  
+  /* -------------------- Smooth Animation -------------------- */
+  @keyframes fadeIn {
+    from {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* -------------------- Responsive Design -------------------- */
+  @media (max-width: 480px) {
+    .login-card {
+      width: 90%;
+    }
+  }
+  
