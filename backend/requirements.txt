@@ -1,0 +1,5 @@
+Flask
+Flask-Bcrypt
+Flask-Cors
+Werkzeug
+prometheus-flask-exporter

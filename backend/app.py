@@ -1,4 +1,4 @@
-from flask import Flask
+
 from flask import Flask, request, jsonify
 from flask_bcrypt import Bcrypt
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,10 +9,6 @@ import os
 from db_config import get_db_connection
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
-from prometheus_client import start_http_server, Counter, Gauge, generate_latest
-from prometheus_client import Counter
-from prometheus_client import generate_latest, CONTENT_TYPE_LATEST
-
 
 
 app = Flask(__name__)
@@ -20,21 +16,16 @@ app = Flask(__name__)
 # Define the allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = './uploads'  # Directory where images will be saved
-
-metrics = PrometheusMetrics(app)
-
-ticket_creation_counter = Counter('ticket_creation_count', 'Total number of tickets raised')
-
-# Define a counter for tracking ticket resolutions
-ticket_resolution_counter = Counter('ticket_resolution_count', 'Total number of tickets resolved')
-
-
-
 CORS(app)
+metrics = PrometheusMetrics(app)
 bcrypt = Bcrypt(app) 
 hashed_password = generate_password_hash("your_password")
 
+
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+
+
 
 # Ensure that the folder exists
 if not os.path.exists(UPLOAD_FOLDER):
@@ -43,23 +34,11 @@ if not os.path.exists(UPLOAD_FOLDER):
 # Function to check allowed file types
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route("/")
 def home():
     return jsonify({"message": "Welcome to the College Service App"}), 200  # ✅ Return JSON, not plain text
 
-
-@app.route('/health', methods=['GET'])
-def health_check():
-    return jsonify(status="OK"), 200
-
-@app.route('/metrics')
-def metrics():
-    return generate_latest(), 200, {'Content-Type': CONTENT_TYPE_LATEST}
-
-@app.route("/example")
-def example():
-    # Your logic
-    return "Hello, World!"
 
 @app.route('/services', methods=['GET'])
 def get_services():
@@ -416,42 +395,5 @@ def delete_ticket(ticket_id):
         conn.close()
         return jsonify({"error": str(e)}), 500
 
-# ✅ Get analytics (ticket count by service & status breakdown)
-
-
-@app.route('/admin-dashboard/analytics', methods=['GET'])
-def get_ticket_analytics():
-    conn = get_db_connection()
-    cursor = conn.cursor()
-
-    # Count tickets per service
-    cursor.execute("""
-        SELECT services.service_name, COUNT(tickets.ticket_id)
-        FROM services LEFT JOIN tickets ON services.service_id = tickets.service_id
-        GROUP BY services.service_id
-    """)
-    service_counts = cursor.fetchall()
-
-    # Count tickets by status
-    cursor.execute("""
-        SELECT status, COUNT(ticket_id)
-        FROM tickets
-        GROUP BY status
-    """)
-    status_counts = cursor.fetchall()
-
-    conn.close()
-
-    analytics_data = {
-        "tickets_per_service": {s[0]: s[1] for s in service_counts},
-        "tickets_by_status": {s[0]: s[1] for s in status_counts}
-    }
-
-    return jsonify(analytics_data), 200
-
-@app.route("/admin-dashboard/tickets")
-def get_tickets():
-    return {"message": "CORS is working!"}
-
-if __name__ == '__main__':
-    app.run(host='127.0.0.1', port=5000)
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
