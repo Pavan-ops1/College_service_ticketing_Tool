@@ -74,7 +74,7 @@ const CleaningDashboard = () => {
                   <option value="Completed">Completed</option>
                 </select>
 
-                <button 
+                <button
                   className="view-button"
                   onClick={() => setSelectedTicket(ticket)}
                 >
@@ -93,14 +93,11 @@ const CleaningDashboard = () => {
           <p><strong>Status:</strong> {selectedTicket.status}</p>
           <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
 
-          {selectedTicket.image_path ? (
+          {selectedTicket.image_url ? (
             <div className="ticket-image">
               <strong>Image:</strong>
               <img
-                src={selectedTicket.image_path.startsWith("http") 
-                  ? selectedTicket.image_path 
-                  : `http://127.0.0.1:5000/uploads/${selectedTicket.image_path}`
-                }
+                src={selectedTicket.image_url}  // Use the image URL directly from backend
                 alt="Ticket Image"
                 onError={(e) => { e.target.src = "/fallback-image.jpg"; }} // Fallback if image fails to load
               />
