@@ -1,0 +1,24 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+    environment:
+      - FLASK_ENV=development  # Set Flask environment
+      - DATABASE_URL=sqlite:///app/database.db  # Use SQLite file inside the container
+    depends_on: []
+
+  frontend:
+    build:
+      context: ./college-service-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3001:3001"
+    depends_on:
+      - backend
