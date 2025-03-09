@@ -10,6 +10,8 @@ from db_config import get_db_connection
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
 
+from flask import send_from_directory
+
 
 app = Flask(__name__)
 
@@ -35,9 +37,18 @@ if not os.path.exists(UPLOAD_FOLDER):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
+
+
 @app.route("/")
 def home():
     return jsonify({"message": "Welcome to the College Service App"}), 200  # ✅ Return JSON, not plain text
+
+
+
+@app.route('/uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route('/services', methods=['GET'])
@@ -193,7 +204,7 @@ def get_student_tickets(student_id):
         return jsonify({"message": "No tickets found."}), 404
 
     # Backend URL where images are stored
-    base_url = "http://your-backend-domain/uploads/"
+    base_url = "http://localhost:5000/uploads/"
 
     ticket_list = [
         {
@@ -256,8 +267,10 @@ def get_service_tickets(service_id):
 
     if not tickets:
         return jsonify({"message": "No tickets found for this service."}), 404
-
+    
     # ✅ Return tickets with `image_path`
+
+    base_url = "http://localhost:5000/uploads/"
     ticket_list = [
         {
             "ticket_id": t[0],
@@ -265,7 +278,7 @@ def get_service_tickets(service_id):
             "description": t[2],
             "status": t[3],
             "created_at": t[4],
-            "image_path": t[5] if t[5] else None  # Ensure None if no image
+            "image_url": base_url + os.path.basename(t[5]) if t[5] else None  # Convert local path to URL
         }
         for t in tickets
     ]
@@ -290,7 +303,7 @@ def get_all_tickets():
 
     if not tickets:
         return jsonify({"message": "No tickets found."}), 404
-
+    
     ticket_list = [
         {
             "ticket_id": t[0],
@@ -301,6 +314,7 @@ def get_all_tickets():
             "status": t[5],
             "created_at": t[6],
             "image_path": t[7] if t[7] else None
+            
         }
         for t in tickets
     ]
