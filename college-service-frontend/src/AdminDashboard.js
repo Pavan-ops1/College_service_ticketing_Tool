@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; 
 import './AdminDashboard.css';
-
+import { Link } from 'react-router-dom'; // Import Link for navigation
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -119,6 +119,11 @@ const AdminDashboard = () => {
   return (
     <div className="admin-dashboard">
       <h2 className="title">🛠️ Admin Dashboard</h2>
+
+      {/* Link to Data Analytics */}
+      <div className="data-analytics-link">
+        <Link to="/data-analytics">📊 Go to Data Analytics</Link>
+      </div>
 
       {/* Filters & Search */}
       <div className="filters">

@@ -6,6 +6,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 import sqlite3  # Import the sqlite3 module
 import os
+from datetime import datetime, timedelta
 from db_config import get_db_connection
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
@@ -353,61 +354,69 @@ def get_tickets_by_service(service_id):
 
     return jsonify(ticket_list), 200
 
-@app.route('/admin/update-ticket/<int:ticket_id>', methods=['PUT'])
-def admin_update_ticket(ticket_id):
-    data = request.json  # Get JSON request body
-    new_status = data.get("status")
-    new_service_type = data.get("service_type")  # Example: allow admin to change service type as well
-    new_description = data.get("description")  # Allow description update
-
-    if not new_status:
-        return jsonify({"error": "Status is required"}), 400
-
+@app.route('/admin-dashboard/data-analytics', methods=['GET'])
+def get_analytics():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    try:
-        cursor.execute(""" 
-            UPDATE tickets SET 
-                status = ?, 
-                service_type = ?, 
-                description = ?, 
-                updated_at = ?
-            WHERE ticket_id = ? 
-        """, (new_status, new_service_type, new_description, datetime.utcnow(), ticket_id))
+    # Total number of tickets created (all services)
+    cursor.execute("SELECT COUNT(*) FROM tickets")
+    total_tickets = cursor.fetchone()[0]
 
-        if cursor.rowcount == 0:
-            return jsonify({"error": "Ticket not found"}), 404
+    # Number of tickets created per service
+    cursor.execute("""
+        SELECT s.service_name, COUNT(t.ticket_id)
+        FROM tickets t
+        JOIN services s ON t.service_id = s.service_id
+        GROUP BY s.service_name
+    """)
+    tickets_per_service = cursor.fetchall()
 
-        conn.commit()
-        conn.close()
+    # Status distribution for each service
+    cursor.execute("""
+        SELECT s.service_name, t.status, COUNT(*)
+        FROM tickets t
+        JOIN services s ON t.service_id = s.service_id
+        GROUP BY s.service_name, t.status
+    """)
+    status_distribution_per_service = cursor.fetchall()
 
-        return jsonify({"message": f"Ticket {ticket_id} updated successfully by admin!"}), 200
+    # Number of tickets created per day (all services)
+    cursor.execute("""
+        SELECT DATE(created_at), COUNT(*)
+        FROM tickets
+        GROUP BY DATE(created_at)
+    """)
+    tickets_per_day = cursor.fetchall()
 
-    except Exception as e:
-        conn.rollback()
-        conn.close()
-        return jsonify({"error": str(e)}), 500
+    # Format the analytics data
+    analytics_data = {
+        "total_tickets": total_tickets,
+        "tickets_per_service": [{"service_name": row[0], "count": row[1]} for row in tickets_per_service],
+        "status_distribution_per_service": []
+    }
 
-@app.route('/admin-dashboard/delete-ticket/<int:ticket_id>', methods=['DELETE'])
-def delete_ticket(ticket_id):
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    # Format status distribution per service
+    service_status_dict = {}
+    for service_name, status, count in status_distribution_per_service:
+        if service_name not in service_status_dict:
+            service_status_dict[service_name] = []
+        service_status_dict[service_name].append({"status": status, "count": count})
 
-    try:
-        cursor.execute("DELETE FROM tickets WHERE ticket_id = ?", (ticket_id,))
-        if cursor.rowcount == 0:
-            return jsonify({"error": "Ticket not found"}), 404
+    # Add the status distribution to the response
+    for service_name, statuses in service_status_dict.items():
+        analytics_data["status_distribution_per_service"].append({
+            "service_name": service_name,
+            "statuses": statuses
+        })
 
-        conn.commit()
-        conn.close()
+    # Add other analytics
+    analytics_data["tickets_per_day"] = [{"date": row[0], "count": row[1]} for row in tickets_per_day]
 
-        return jsonify({"message": "Ticket deleted successfully!"}), 200
+    conn.close()
 
-    except Exception as e:
-        conn.rollback()
-        conn.close()
-        return jsonify({"error": str(e)}), 500
+    return jsonify(analytics_data), 200
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
