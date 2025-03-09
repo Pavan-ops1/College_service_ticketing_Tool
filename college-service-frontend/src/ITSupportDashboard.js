@@ -79,13 +79,12 @@ const ITSupportDashboard = () => {
           <p><strong>Status:</strong> {selectedTicket.status}</p>
           <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
 
-          {selectedTicket.image_url ? (
+          {selectedTicket.image_path ? (
             <div>
               <strong>Image:</strong>
               <img
-                src={selectedTicket.image_url}
+                src={`http://127.0.0.1:5000/uploads/${selectedTicket.image_path}`}
                 alt="Ticket Image"
-                onError={(e) => { e.target.src = "/fallback-image.jpg"; }}
                 style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain" }}
               />
             </div>

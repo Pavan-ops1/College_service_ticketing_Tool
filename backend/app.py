@@ -9,23 +9,11 @@ import os
 from db_config import get_db_connection
 from flask_cors import CORS
 from prometheus_flask_exporter import PrometheusMetrics
-from prometheus_client import Counter, Summary, generate_latest
-from prometheus_client import multiprocess, CollectorRegistry
 
 from flask import send_from_directory
 
 
 app = Flask(__name__)
-
-
-REQUEST_COUNT = Counter(
-    'http_requests_total', 'Total number of HTTP requests', ['method', 'endpoint', 'status_code']
-)
-
-REQUEST_LATENCY = Summary(
-    'http_request_latency_seconds', 'Request latency in seconds', ['method', 'endpoint']
-)
-
 
 # Define the allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -280,7 +268,8 @@ def get_service_tickets(service_id):
     if not tickets:
         return jsonify({"message": "No tickets found for this service."}), 404
     
-    # ✅ Return tickets with `image_url`
+    # ✅ Return tickets with `image_path`
+
     base_url = "http://localhost:5000/uploads/"
     ticket_list = [
         {
@@ -289,12 +278,13 @@ def get_service_tickets(service_id):
             "description": t[2],
             "status": t[3],
             "created_at": t[4],
-            "image_url": base_url + os.path.basename(t[5]) if t[5] else None
+            "image_url": base_url + os.path.basename(t[5]) if t[5] else None  # Convert local path to URL
         }
         for t in tickets
     ]
 
     return jsonify(ticket_list), 200
+
 @app.route('/admin-dashboard/tickets', methods=['GET'])
 def get_all_tickets():
     conn = get_db_connection()
@@ -313,23 +303,23 @@ def get_all_tickets():
 
     if not tickets:
         return jsonify({"message": "No tickets found."}), 404
-
+    
     ticket_list = [
         {
             "ticket_id": t[0],
             "user_id": t[1],
             "service_id": t[2],
-            "service_name": t[3],
+            "service_name": t[3],  # ✅ Adding Service Name
             "description": t[4],
             "status": t[5],
             "created_at": t[6],
-            "image_url": f"http://localhost:5000/uploads/{t[7]}" if t[7] else None
+            "image_path": t[7] if t[7] else None
+            
         }
         for t in tickets
     ]
 
     return jsonify(ticket_list), 200
-
 
 # ✅ Get tickets by specific service (for dropdown filter)
 @app.route('/admin-dashboard/tickets/<int:service_id>', methods=['GET'])
@@ -418,14 +408,6 @@ def delete_ticket(ticket_id):
         conn.rollback()
         conn.close()
         return jsonify({"error": str(e)}), 500
-
-
-@app.route('/metrics')
-def metrics():
-    registry = CollectorRegistry()
-    multiprocess.MultiProcessCollector(registry)
-    return generate_latest(registry)
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)

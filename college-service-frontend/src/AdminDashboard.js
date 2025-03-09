@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
+import axios from "axios"; 
 import './AdminDashboard.css';
+
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -12,6 +13,13 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
+
+  // ✅ Service Images
+  const serviceImages = {
+    "Cleaning": "/images/cleaning.png",
+    "Gardening": "/images/gardening.png",
+    "IT Support": "/images/it_support.png",
+  };
 
   // ✅ Fetch Tickets from Flask API
   const fetchTickets = async () => {
@@ -158,11 +166,10 @@ const AdminDashboard = () => {
               <div key={ticket.ticket_id} className="ticket-card">
                 <img
                   className="service-icon"
-                  src={`http://127.0.0.1:5000/${ticket.image_path}`}
+                  src={serviceImages[ticket.service_name]}
                   alt={ticket.service_name}
                   width="60"
                   height="60"
-                  onError={(e) => e.target.src='/images/default.png'}
                 />
                 <div>
                   <strong>Service:</strong> {ticket.service_name}
@@ -189,7 +196,7 @@ const AdminDashboard = () => {
           <h3>Ticket Details</h3>
           <div className="ticket-details">
             <img
-              src={`http://127.0.0.1:5000/${selectedTicket.image_path}`}
+              src={serviceImages[selectedTicket.service_name]}
               alt={selectedTicket.service_name}
               width="100"
               height="100"
