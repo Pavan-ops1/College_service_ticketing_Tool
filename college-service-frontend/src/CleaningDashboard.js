@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import './CleaningDashboard.css'; // External CSS for styling
 
 const CleaningDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -38,7 +37,7 @@ const CleaningDashboard = () => {
       );
 
       if (response.status === 200) {
-        fetchTickets(); // Refresh after update
+        fetchTickets();
       }
     } catch (error) {
       setError(error.response?.data?.message || "Error updating status.");
@@ -46,41 +45,29 @@ const CleaningDashboard = () => {
   };
 
   return (
-    <div className="dashboard-container">
-      <h2 className="dashboard-title">🧹 Cleaning Service Tickets</h2>
+    <div className="container">
+      <h2>🧹 Cleaning Service Tickets</h2>
       {error && <p className="error-message">{error}</p>}
 
       {tickets.length === 0 ? (
-        <p className="no-tickets">No tickets available.</p>
+        <p>No tickets available.</p>
       ) : (
-        <div className="ticket-grid">
+        <div className="grid-container">
           {tickets.map((ticket) => (
             <div className="ticket-card" key={ticket.ticket_id}>
-              <div className="ticket-header">
-                <strong>{ticket.description}</strong>
-                <span className={`ticket-status ${ticket.status.toLowerCase().replace(" ", "-")}`}>
-                  {ticket.status}
-                </span>
-              </div>
+              <strong>{ticket.description}</strong>
+              <p>Status: {ticket.status}</p>
 
-              <div className="ticket-actions">
-                <select
-                  value={ticket.status}
-                  onChange={(e) => updateStatus(ticket.ticket_id, e.target.value)}
-                  className="status-dropdown"
-                >
-                  <option value="Open">Open</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Completed">Completed</option>
-                </select>
+              <select
+                value={ticket.status}
+                onChange={(e) => updateStatus(ticket.ticket_id, e.target.value)}
+              >
+                <option value="Open">Open</option>
+                <option value="In Progress">In Progress</option>
+                <option value="Completed">Completed</option>
+              </select>
 
-                <button
-                  className="view-button"
-                  onClick={() => setSelectedTicket(ticket)}
-                >
-                  View Details
-                </button>
-              </div>
+              <button onClick={() => setSelectedTicket(ticket)}>View Details</button>
             </div>
           ))}
         </div>
@@ -94,21 +81,97 @@ const CleaningDashboard = () => {
           <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
 
           {selectedTicket.image_url ? (
-            <div className="ticket-image">
+            <div>
               <strong>Image:</strong>
               <img
-                src={selectedTicket.image_url}  // Use the image URL directly from backend
+                src={selectedTicket.image_url}
                 alt="Ticket Image"
-                onError={(e) => { e.target.src = "/fallback-image.jpg"; }} // Fallback if image fails to load
+                style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain" }}
               />
             </div>
           ) : (
             <p>No image available.</p>
           )}
 
-          <button className="close-button" onClick={() => setSelectedTicket(null)}>Close</button>
+          <button onClick={() => setSelectedTicket(null)}>Close</button>
         </div>
       )}
+
+      <style jsx>{`
+        .container {
+          max-width: 1200px;
+          margin: 20px auto;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-container {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+        }
+
+        .ticket-card {
+          background-color: #f9f9f9;
+          border: 1px solid #e0e0e0;
+          border-radius: 5px;
+          padding: 15px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+
+        .ticket-card:hover {
+          background-color: #f3f3f3;
+          transform: scale(1.05);
+        }
+
+        select {
+          margin: 10px 0;
+          padding: 8px;
+          border-radius: 5px;
+        }
+
+        button {
+          background-color: #007bff;
+          color: #fff;
+          padding: 8px 15px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: #0056b3;
+        }
+
+        .ticket-details-modal {
+          position: fixed;
+          top: 20%;
+          left: 50%;
+          transform: translate(-50%, -20%);
+          background-color: #fff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          padding: 20px;
+          z-index: 1000;
+          width: 400px;
+        }
+
+        img {
+          max-width: 100%;
+          max-height: 200px;
+          border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+          .grid-container {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+      `}</style>
     </div>
   );
 };

@@ -45,17 +45,18 @@ const GardeningDashboard = () => {
   };
 
   return (
-    <div>
+    <div className="container">
       <h2>🌿 Gardening Service Tickets</h2>
       {error && <p className="error-message">{error}</p>}
 
       {tickets.length === 0 ? (
         <p>No tickets available.</p>
       ) : (
-        <ul>
+        <div className="grid-container">
           {tickets.map((ticket) => (
-            <li key={ticket.ticket_id}>
-              <strong>{ticket.description}</strong> - {ticket.status}
+            <div className="ticket-card" key={ticket.ticket_id}>
+              <strong>{ticket.description}</strong>
+              <p>Status: {ticket.status}</p>
 
               <select
                 value={ticket.status}
@@ -67,9 +68,9 @@ const GardeningDashboard = () => {
               </select>
 
               <button onClick={() => setSelectedTicket(ticket)}>View Details</button>
-            </li>
+            </div>
           ))}
-        </ul>
+        </div>
       )}
 
       {selectedTicket && (
@@ -95,6 +96,82 @@ const GardeningDashboard = () => {
           <button onClick={() => setSelectedTicket(null)}>Close</button>
         </div>
       )}
+
+      <style jsx>{`
+        .container {
+          max-width: 1200px;
+          margin: 20px auto;
+          padding: 20px;
+          background-color: #fff;
+          border-radius: 8px;
+          box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .grid-container {
+          display: grid;
+          grid-template-columns: repeat(4, 1fr);
+          gap: 20px;
+        }
+
+        .ticket-card {
+          background-color: #f9f9f9;
+          border: 1px solid #e0e0e0;
+          border-radius: 5px;
+          padding: 15px;
+          text-align: center;
+          transition: all 0.3s ease;
+        }
+
+        .ticket-card:hover {
+          background-color: #e8f5e9;
+          transform: scale(1.05);
+        }
+
+        select {
+          margin: 10px 0;
+          padding: 8px;
+          border-radius: 5px;
+        }
+
+        button {
+          background-color: #2c7a37;
+          color: #fff;
+          padding: 8px 15px;
+          border: none;
+          border-radius: 5px;
+          cursor: pointer;
+        }
+
+        button:hover {
+          background-color: #1e5725;
+        }
+
+        .ticket-details-modal {
+          position: fixed;
+          top: 20%;
+          left: 50%;
+          transform: translate(-50%, -20%);
+          background-color: #fff;
+          border: 1px solid #ddd;
+          border-radius: 8px;
+          box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+          padding: 20px;
+          z-index: 1000;
+          width: 400px;
+        }
+
+        img {
+          max-width: 100%;
+          max-height: 200px;
+          border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+          .grid-container {
+            grid-template-columns: repeat(2, 1fr);
+          }
+        }
+      `}</style>
     </div>
   );
 };
