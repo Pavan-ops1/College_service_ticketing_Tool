@@ -285,6 +285,7 @@ def get_service_tickets(service_id):
     ]
 
     return jsonify(ticket_list), 200
+
 @app.route('/admin-dashboard/tickets', methods=['GET'])
 def get_all_tickets():
     conn = get_db_connection()
@@ -303,20 +304,18 @@ def get_all_tickets():
 
     if not tickets:
         return jsonify({"message": "No tickets found."}), 404
-
-    # Backend URL where images are stored
-    base_url = "http://localhost:5000/uploads/"
-
+    
     ticket_list = [
         {
             "ticket_id": t[0],
             "user_id": t[1],
             "service_id": t[2],
-            "service_name": t[3],
+            "service_name": t[3],  # ✅ Adding Service Name
             "description": t[4],
             "status": t[5],
             "created_at": t[6],
-            "image_url": base_url + os.path.basename(t[7]) if t[7] else None  # Convert local path to URL
+            "image_path": t[7] if t[7] else None
+            
         }
         for t in tickets
     ]
