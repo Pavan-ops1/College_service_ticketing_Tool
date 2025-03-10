@@ -354,6 +354,65 @@ def get_tickets_by_service(service_id):
 
     return jsonify(ticket_list), 200
 
+
+
+@app.route('/admin/update-ticket/<int:ticket_id>', methods=['PUT'])
+def admin_update_ticket(ticket_id):
+    data = request.json  # Get JSON request body
+    new_status = data.get("status")
+    new_service_type = data.get("service_type")  # Example: allow admin to change service type as well
+    new_description = data.get("description")  # Allow description update
+
+    if not new_status:
+        return jsonify({"error": "Status is required"}), 400
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute(""" 
+            UPDATE tickets SET 
+                status = ?, 
+                service_type = ?, 
+                description = ?, 
+                updated_at = ?
+            WHERE ticket_id = ? 
+        """, (new_status, new_service_type, new_description, datetime.utcnow(), ticket_id))
+
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Ticket not found"}), 404
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({"message": f"Ticket {ticket_id} updated successfully by admin!"}), 200
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/admin-dashboard/delete-ticket/<int:ticket_id>', methods=['DELETE'])
+def delete_ticket(ticket_id):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    try:
+        cursor.execute("DELETE FROM tickets WHERE ticket_id = ?", (ticket_id,))
+        if cursor.rowcount == 0:
+            return jsonify({"error": "Ticket not found"}), 404
+
+        conn.commit()
+        conn.close()
+
+        return jsonify({"message": "Ticket deleted successfully!"}), 200
+
+    except Exception as e:
+        conn.rollback()
+        conn.close()
+        return jsonify({"error": str(e)}), 500
+
+
 @app.route('/admin-dashboard/data-analytics', methods=['GET'])
 def get_analytics():
     conn = get_db_connection()
