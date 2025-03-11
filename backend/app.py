@@ -16,6 +16,7 @@ from flask import send_from_directory
 
 app = Flask(__name__)
 
+
 # Define the allowed file types
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 UPLOAD_FOLDER = './uploads'  # Directory where images will be saved
@@ -47,7 +48,11 @@ def home():
 
 
 
-@app.route('/uploads/<filename>')
+
+
+from flask import send_from_directory
+
+@app.route('/uploads/<path:filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
@@ -304,7 +309,7 @@ def get_all_tickets():
 
     if not tickets:
         return jsonify({"message": "No tickets found."}), 404
-    
+    base_url = "http://localhost:5000/uploads/"
     ticket_list = [
         {
             "ticket_id": t[0],
@@ -314,7 +319,7 @@ def get_all_tickets():
             "description": t[4],
             "status": t[5],
             "created_at": t[6],
-            "image_path": t[7] if t[7] else None
+            "image_url": base_url + os.path.basename(t[7]) if t[7] else None  # ✅
             
         }
         for t in tickets

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios"; 
 import './AdminDashboard.css';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link } from 'react-router-dom';
 
 const AdminDashboard = () => {
   const [tickets, setTickets] = useState([]);
@@ -13,13 +13,6 @@ const AdminDashboard = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [serviceFilter, setServiceFilter] = useState("");
   const [dateRange, setDateRange] = useState({ start: "", end: "" });
-
-  // ✅ Service Images
-  const serviceImages = {
-    "Cleaning": "/images/cleaning.png",
-    "Gardening": "/images/gardening.png",
-    "IT Support": "/images/it_support.png",
-  };
 
   // ✅ Fetch Tickets from Flask API
   const fetchTickets = async () => {
@@ -171,7 +164,7 @@ const AdminDashboard = () => {
               <div key={ticket.ticket_id} className="ticket-card">
                 <img
                   className="service-icon"
-                  src={serviceImages[ticket.service_name]}
+                  src={ticket.image_url}
                   alt={ticket.service_name}
                   width="60"
                   height="60"
@@ -201,7 +194,7 @@ const AdminDashboard = () => {
           <h3>Ticket Details</h3>
           <div className="ticket-details">
             <img
-              src={serviceImages[selectedTicket.service_name]}
+              src={selectedTicket.image_url}
               alt={selectedTicket.service_name}
               width="100"
               height="100"

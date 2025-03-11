@@ -55,6 +55,11 @@ const GardeningDashboard = () => {
         <div className="grid-container">
           {tickets.map((ticket) => (
             <div className="ticket-card" key={ticket.ticket_id}>
+              <img
+                src={ticket.image_url}
+                alt="Ticket Image"
+                className="ticket-image"
+              />
               <strong>{ticket.description}</strong>
               <p>Status: {ticket.status}</p>
 
@@ -76,22 +81,14 @@ const GardeningDashboard = () => {
       {selectedTicket && (
         <div className="ticket-details-modal">
           <h3>Ticket Details</h3>
+          <img
+            src={selectedTicket.image_url}
+            alt="Ticket Image"
+            className="ticket-image-large"
+          />
           <p><strong>Description:</strong> {selectedTicket.description}</p>
           <p><strong>Status:</strong> {selectedTicket.status}</p>
           <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
-
-          {selectedTicket.image_path ? (
-            <div>
-              <strong>Image:</strong>
-              <img
-                src={`http://127.0.0.1:5000/${selectedTicket.image_path}`}
-                alt="Ticket Image"
-                style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain" }}
-              />
-            </div>
-          ) : (
-            <p>No image available.</p>
-          )}
 
           <button onClick={() => setSelectedTicket(null)}>Close</button>
         </div>
@@ -120,6 +117,12 @@ const GardeningDashboard = () => {
           padding: 15px;
           text-align: center;
           transition: all 0.3s ease;
+        }
+
+        .ticket-card img {
+          max-width: 100%;
+          max-height: 150px;
+          border-radius: 5px;
         }
 
         .ticket-card:hover {
@@ -160,9 +163,9 @@ const GardeningDashboard = () => {
           width: 400px;
         }
 
-        img {
+        .ticket-image-large {
           max-width: 100%;
-          max-height: 200px;
+          max-height: 300px;
           border-radius: 5px;
         }
 

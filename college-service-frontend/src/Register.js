@@ -32,7 +32,7 @@ const Register = () => {
 
       if (response.status === 201) {
         alert("Registration successful! 🎉 Redirecting to login...");
-        navigate("/login");
+        navigate("/login"); // Redirect to login page
       }
     } catch (error) {
       alert("❌ Error: " + (error.response?.data?.error || "Something went wrong!"));
@@ -40,10 +40,10 @@ const Register = () => {
   };
 
   return (
-    <div style={registerContainerStyle}>
-      <div style={overlayStyle}>
+    <div className="register-container">
+      <div className="form-overlay">
         <h2>Register</h2>
-        <form onSubmit={handleRegister} style={formStyle}>
+        <form onSubmit={handleRegister}>
           <input
             type="text"
             placeholder="Name"
@@ -87,34 +87,6 @@ const Register = () => {
       </div>
     </div>
   );
-};
-
-// ✅ Full-screen background image like in App.js
-const registerContainerStyle = {
-  position: "relative",
-  textAlign: "center",
-  height: "100vh",
-  backgroundImage: 'url("/college pic.jpg")',
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  backgroundRepeat: "no-repeat",
-  color: "white",
-};
-
-const overlayStyle = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  padding: "30px",
-  backgroundColor: "rgba(0, 0, 0, 0.6)",
-  borderRadius: "10px",
-  width: "400px",
-};
-
-const formStyle = {
-  display: "flex",
-  flexDirection: "column",
 };
 
 export default Register;

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
-const ITSupportDashboard = () => {
+const ManagementDashboard = () => {
   const [tickets, setTickets] = useState([]);
   const [error, setError] = useState("");
   const [selectedTicket, setSelectedTicket] = useState(null);
-  const serviceId = 3; // IT Support Service ID
+  const serviceId = 1; // Cleaning Service ID
 
   useEffect(() => {
     fetchTickets();
@@ -46,7 +46,7 @@ const ITSupportDashboard = () => {
 
   return (
     <div className="container">
-      <h2>💻 IT Support Tickets</h2>
+      <h2>🧹 Cleaning Service Tickets</h2>
       {error && <p className="error-message">{error}</p>}
 
       {tickets.length === 0 ? (
@@ -55,11 +55,6 @@ const ITSupportDashboard = () => {
         <div className="grid-container">
           {tickets.map((ticket) => (
             <div className="ticket-card" key={ticket.ticket_id}>
-              <img
-                src={ticket.image_url || "https://via.placeholder.com/150"}
-                alt="Ticket"
-                className="ticket-image"
-              />
               <strong>{ticket.description}</strong>
               <p>Status: {ticket.status}</p>
 
@@ -86,11 +81,14 @@ const ITSupportDashboard = () => {
           <p><strong>Created At:</strong> {selectedTicket.created_at}</p>
 
           {selectedTicket.image_url ? (
-            <img
-              src={selectedTicket.image_url}
-              alt="Ticket Image"
-              className="modal-image"
-            />
+            <div>
+              <strong>Image:</strong>
+              <img
+                src={selectedTicket.image_url}
+                alt="Ticket Image"
+                style={{ maxWidth: "300px", maxHeight: "300px", objectFit: "contain" }}
+              />
+            </div>
           ) : (
             <p>No image available.</p>
           )}
@@ -129,13 +127,6 @@ const ITSupportDashboard = () => {
           transform: scale(1.05);
         }
 
-        .ticket-image {
-          width: 100%;
-          height: 150px;
-          object-fit: cover;
-          border-radius: 5px;
-        }
-
         select {
           margin: 10px 0;
           padding: 8px;
@@ -169,14 +160,20 @@ const ITSupportDashboard = () => {
           width: 400px;
         }
 
-        .modal-image {
+        img {
           max-width: 100%;
-          max-height: 300px;
+          max-height: 200px;
           border-radius: 5px;
+        }
+
+        @media (max-width: 768px) {
+          .grid-container {
+            grid-template-columns: repeat(2, 1fr);
+          }
         }
       `}</style>
     </div>
   );
 };
 
-export default ITSupportDashboard;
+export default ManagementDashboard;
