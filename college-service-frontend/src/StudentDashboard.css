@@ -63,7 +63,7 @@ button:hover {
 
 .tickets-list ul {
   display: grid;
-  grid-template-columns: repeat(4, 1fr); /* 4 columns */
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
   gap: 20px;
   list-style-type: none;
   padding: 0;
@@ -77,18 +77,26 @@ button:hover {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease-in-out;
+}
+
+.tickets-list li:hover {
+  transform: translateY(-5px); /* Lift effect on hover */
 }
 
 .tickets-list img {
-  max-width: 100px;
-  max-height: 100px;
-  object-fit: cover;
+  width: 100%; /* Ensure the image takes up the full width of the container */
+  height: auto; /* Maintain aspect ratio */
+  object-fit: cover; /* Cover the space nicely */
   border-radius: 5px;
   margin-top: 10px;
 }
 
 .error {
   color: red;
+  text-align: center;
+  margin-top: 20px;
 }
 
 .ticket-details-modal {
@@ -98,6 +106,8 @@ button:hover {
   border: 1px solid #ccc;
   max-width: 600px;
   margin: auto;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Modal shadow */
 }
 
 .ticket-details-modal img {
@@ -119,4 +129,38 @@ button:hover {
 
 .ticket-details-modal button:hover {
   background-color: #e53935;
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: white;
+  padding: 20px;
+  border-radius: 5px;
+  max-width: 600px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+/* Responsive Design for Grid Layout */
+@media (max-width: 900px) {
+  .tickets-list ul {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+  }
+}
+
+@media (max-width: 600px) {
+  .tickets-list ul {
+    grid-template-columns: 1fr; /* 1 column on small screens */
+  }
 }

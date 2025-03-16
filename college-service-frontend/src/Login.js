@@ -15,9 +15,14 @@ const Login = () => {
 
     try {
       const response = await axios.post("http://127.0.0.1:5000/login", { email, password });
+
       if (response.status === 200) {
         alert("✅ Login successful!");
-        const { role, service_id, service_name } = response.data;
+        const { user_id, role, service_id, service_name } = response.data;
+
+        // Store user_id in localStorage
+        localStorage.setItem("user_id", user_id);
+        localStorage.setItem("role", role);
 
         switch (role) {
           case "student":
@@ -28,11 +33,11 @@ const Login = () => {
             break;
           case "service_staff":
             navigate(
-              service_name.toLowerCase() === "cleaning"
+              service_name?.toLowerCase() === "cleaning"
                 ? "/cleaning-dashboard"
-                : service_name.toLowerCase() === "gardening"
+                : service_name?.toLowerCase() === "gardening"
                 ? "/gardening-dashboard"
-                : service_name.toLowerCase() === "it support"
+                : service_name?.toLowerCase() === "it support"
                 ? "/it-support-dashboard"
                 : `/service/${service_id}-dashboard`
             );
@@ -49,7 +54,9 @@ const Login = () => {
   return (
     <div style={loginStyle}>
       <div style={overlayStyle}>
-        <h2 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem", color: "white" }}>Welcome Back</h2>
+        <h2 style={{ fontSize: "2rem", fontWeight: "bold", marginBottom: "1rem", color: "white" }}>
+          Welcome Back
+        </h2>
         {error && <p style={{ color: "red", fontSize: "0.9rem", marginBottom: "1rem" }}>{error}</p>}
 
         <form onSubmit={handleLogin} style={{ width: "100%" }}>

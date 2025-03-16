@@ -118,16 +118,17 @@ def login():
     conn = get_db_connection()
     cursor = conn.cursor()
 
-    cursor.execute("SELECT password_hash, role, service_id FROM users WHERE email = ?", (email,))
+    # Fetch user_id along with other details
+    cursor.execute("SELECT user_id, password_hash, role, service_id FROM users WHERE email = ?", (email,))
     user = cursor.fetchone()
 
     if not user:
         conn.close()
         return jsonify({"error": "Invalid email or password"}), 401
 
-    stored_hash, role, service_id = user  # Extract values
+    user_id, stored_hash, role, service_id = user  # Extract values
 
-    print(f"User Role: {role}")  # Debugging
+    print(f"User ID: {user_id}, Role: {role}")  # Debugging
 
     if not bcrypt.check_password_hash(stored_hash, password):
         conn.close()
@@ -142,8 +143,10 @@ def login():
 
     conn.close()
 
+    # ✅ Return user_id in response
     return jsonify({
         "message": "Login successful!",
+        "user_id": user_id,  # Added user_id
         "role": role,
         "service_id": service_id,
         "service_name": service_name
